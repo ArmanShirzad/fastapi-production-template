@@ -93,11 +93,25 @@ make docker-compose-up
 | `DEBUG` | Debug mode | True |
 | `LOG_LEVEL` | Logging level | INFO |
 | `DATABASE_URL` | Database connection string | (optional) |
-| `SECRET_KEY` | Secret key for security | (required) |
+| `SECRET_KEY` | Secret key for security | (generated if not provided) |
 | `CORS_ORIGINS` | CORS allowed origins | (empty for security) |
 | `SENTRY_DSN` | Sentry DSN for error tracking | (optional) |
 | `HOST` | Server host | 0.0.0.0 |
 | `PORT` | Server port | 8000 |
+
+## Secret Configuration
+
+The template works out of the box with sensible defaults, but you can enhance it by adding secrets in your repository Settings:
+
+- **`SECRET_KEY`** - Real random string for production signing (dev generates one automatically)
+- **`DATABASE_URL`** - PostgreSQL connection for production and integration tests
+- **`SENTRY_DSN`** - Enable Sentry error tracking and release notifications
+
+### What happens when secrets are provided:
+
+- **`DATABASE_URL`** → Enables PostgreSQL integration tests in CI
+- **`SENTRY_DSN`** → Enables Sentry release step in GitHub Actions
+- **`SECRET_KEY`** → Required for production; dev mode generates one if missing
 
 ## Database Options
 
