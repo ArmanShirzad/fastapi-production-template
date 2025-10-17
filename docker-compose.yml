@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_NAME=FastAPI Template
+      - APP_VERSION=0.1.0
+      - ENVIRONMENT=development
+      - DEBUG=True
+      - LOG_LEVEL=INFO
+      - DATABASE_URL=postgresql+asyncpg://postgres:password@db:5432/fastapi_db
+      - SECRET_KEY=dev-secret-key-change-in-production
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:8000
+      - HOST=0.0.0.0
+      - PORT=8000
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./app:/app/app:ro
+    restart: unless-stopped
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=fastapi_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

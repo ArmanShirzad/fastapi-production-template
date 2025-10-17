@@ -1,0 +1,39 @@
+name: fastapi-template
+type: docker
+image: ghcr.io/armanshirzad/fastiapitemplate:latest
+ports:
+  - port: 8000
+    protocol: http
+    target_port: 8000
+    public: true
+env:
+  - key: APP_NAME
+    value: FastAPI Template
+  - key: APP_VERSION
+    value: 0.1.0
+  - key: ENVIRONMENT
+    value: production
+  - key: DEBUG
+    value: false
+  - key: LOG_LEVEL
+    value: INFO
+  - key: SECRET_KEY
+    value: your-production-secret-key
+  - key: CORS_ORIGINS
+    value: https://yourdomain.com
+  - key: HOST
+    value: 0.0.0.0
+  - key: PORT
+    value: 8000
+  - key: DATABASE_URL
+    value: postgresql+asyncpg://user:password@host:5432/dbname
+health_checks:
+  - path: /health
+    port: 8000
+    interval: 30s
+    timeout: 10s
+    retries: 3
+scaling:
+  min_instances: 1
+  max_instances: 10
+  target_cpu_percent: 70

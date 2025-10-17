@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: fastapi-template
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: starter
+    region: oregon
+    branch: main
+    healthCheckPath: /health
+    envVars:
+      - key: APP_NAME
+        value: FastAPI Template
+      - key: APP_VERSION
+        value: 0.1.0
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: false
+      - key: LOG_LEVEL
+        value: INFO
+      - key: SECRET_KEY
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: https://yourdomain.com
+      - key: HOST
+        value: 0.0.0.0
+      - key: PORT
+        value: 8000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: fastapi-db
+          property: connectionString
+
+databases:
+  - name: fastapi-db
+    plan: starter
+    databaseName: fastapi_db
+    user: fastapi_user
