@@ -50,25 +50,29 @@ jobs:
         cache-to: type=gha,mode=max
     
     - name: Create GitHub Release
-      run: |
-        gh release create ${{ github.ref_name }} \
-          --title "Release ${{ github.ref_name }}" \
-          --notes "## Changes in this Release
-        
-        See the [changelog](CHANGELOG.md) for detailed information about changes in this release.
-        
-        ## Docker Image
-        
-        The Docker image is available at:
-        - \`ghcr.io/armanshirzad/fastiapitemplate:latest\`
-        - \`ghcr.io/armanshirzad/fastiapitemplate:${{ github.ref_name }}\`
-        
-        ## Quick Deploy
-        
-        ### Render
-        [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/armanshirzad/FastiApiTemplate)
-        
-        ### Koyeb
-        [![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=docker&image=ghcr.io/armanshirzad/fastiapitemplate:latest)"
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ github.ref_name }}
+        name: Release ${{ github.ref_name }}
+        body: |
+          ## Changes in this Release
+          
+          See the [changelog](CHANGELOG.md) for detailed information about changes in this release.
+          
+          ## Docker Image
+          
+          The Docker image is available at:
+          - `ghcr.io/armanshirzad/fastiapitemplate:latest`
+          - `ghcr.io/armanshirzad/fastiapitemplate:${{ github.ref_name }}`
+          
+          ## Quick Deploy
+          
+          ### Render
+          [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/armanshirzad/FastiApiTemplate)
+          
+          ### Koyeb
+          [![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=docker&image=ghcr.io/armanshirzad/fastiapitemplate:latest)
+        draft: false
+        prerelease: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
