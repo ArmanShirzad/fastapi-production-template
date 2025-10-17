@@ -6,4 +6,4 @@ asyncpg==0.29.0
 psycopg2-binary==2.9.9
 sentry-sdk[fastapi]==1.38.0
 prometheus-fastapi-instrumentator==6.1.0
-python-dotenv==1.0.0
+python-dotenv==1.1.1
