@@ -18,7 +18,7 @@ class Settings(BaseSettings):
 
     # Security
     secret_key: str = "your-secret-key-here"
-    cors_origins: List[str] = ["http://localhost:3000", "http://localhost:8000"]
+    cors_origins: List[str] = []  # Empty by default for security
 
     # Sentry
     sentry_dsn: Optional[str] = None

@@ -1,0 +1,17 @@
+name: Bug report
+description: File a bug
+labels: [bug]
+body:
+  - type: textarea
+    id: what-happened
+    attributes: { label: What happened?, description: Also tell us what you expected to happen. }
+    validations: { required: true }
+  - type: input
+    id: version
+    attributes: { label: Version, placeholder: v0.1.3 }
+  - type: input
+    id: python
+    attributes: { label: Python version, placeholder: 3.12.x }
+  - type: input
+    id: os
+    attributes: { label: OS, placeholder: Ubuntu 22.04 / macOS / Windows }

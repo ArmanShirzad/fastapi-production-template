@@ -71,7 +71,7 @@ make docker-compose-up
 | `LOG_LEVEL` | Logging level | INFO |
 | `DATABASE_URL` | Database connection string | (optional) |
 | `SECRET_KEY` | Secret key for security | (required) |
-| `CORS_ORIGINS` | CORS allowed origins | http://localhost:3000 |
+| `CORS_ORIGINS` | CORS allowed origins | (empty for security) |
 | `SENTRY_DSN` | Sentry DSN for error tracking | (optional) |
 | `HOST` | Server host | 0.0.0.0 |
 | `PORT` | Server port | 8000 |
@@ -171,6 +171,19 @@ tests/
 ├── conftest.py
 └── test_health.py
 ```
+
+## Security
+
+This template includes several security features:
+
+- **CORS Protection**: Empty origins by default (configure via `CORS_ORIGINS`)
+- **Trusted Host Middleware**: Prevents host header attacks in production
+- **Non-root Docker User**: Runs as `appuser` instead of root
+- **Security Headers**: Basic security middleware included
+- **Dependency Scanning**: Dependabot for automated security updates
+- **Code Analysis**: CodeQL and Scorecard security scanning
+
+For security vulnerabilities, please see [SECURITY.md](SECURITY.md).
 
 ## Contributing
 
