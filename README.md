@@ -10,17 +10,17 @@ A production-ready FastAPI template with Docker, CI/CD, observability, and one-c
 
 ## Features
 
-- 🚀 **FastAPI** with Python 3.12
-- 🐳 **Docker** multi-stage build for production
-- 📊 **Prometheus** metrics integration
-- 🐛 **Sentry** error tracking
-- 🗄️ **PostgreSQL** support (optional)
-- 🔍 **Health checks** for monitoring
-- 🚀 **One-click deploy** to Render or Koyeb
-- 🔄 **GitHub Actions** CI/CD
-- 📦 **GitHub Container Registry** publishing
-- 🧪 **Testing** with pytest
-- 🎨 **Code quality** with ruff
+- **FastAPI** with Python 3.12
+- **Docker** multi-stage build for production
+- **Prometheus** metrics integration
+- **Sentry** error tracking
+- **PostgreSQL** support (optional)
+- **Health checks** for monitoring
+- **One-click deploy** to Render or Koyeb
+- **GitHub Actions** CI/CD
+- **GitHub Container Registry** publishing
+- **Testing** with pytest
+- **Code quality** with ruff
 
 ## CI/CD Overview
 
