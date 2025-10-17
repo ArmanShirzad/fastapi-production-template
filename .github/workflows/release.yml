@@ -55,6 +55,27 @@ jobs:
         tag_name: ${{ github.ref_name }}
         name: Release ${{ github.ref_name }}
         body: |
+          ## Highlights
+          
+          🚀 **New Features & Improvements**
+          - Enhanced security with empty CORS origins by default
+          - Added TrustedHostMiddleware for production security
+          - Comprehensive contributor tools and templates
+          - Automated security scanning with CodeQL and Scorecard
+          - Pre-commit hooks for code quality
+          
+          🔒 **Security Enhancements**
+          - Non-root Docker user implementation
+          - Security headers middleware
+          - Dependency scanning with Dependabot
+          - Vulnerability reporting policy
+          
+          👥 **Contributor Experience**
+          - GitHub issue templates for bugs and features
+          - Pull request template with checklist
+          - Code of Conduct and Contributing guidelines
+          - Pre-commit hooks and editor configuration
+          
           ## Changes in this Release
           
           See the [changelog](CHANGELOG.md) for detailed information about changes in this release.

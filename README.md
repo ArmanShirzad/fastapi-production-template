@@ -5,6 +5,7 @@
 [![Python Version](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Docker](https://img.shields.io/badge/docker-ghcr.io%2Farmanshirzad%2Ffastiapitemplate-blue.svg)](https://github.com/armanshirzad/FastiApiTemplate/pkgs/container/fastiapitemplate)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/armanshirzad/FastiApiTemplate/badge)](https://api.securityscorecards.dev/projects/github.com/armanshirzad/FastiApiTemplate)
 
 A production-ready FastAPI template with Docker, CI/CD, observability, and one-click deployment to Render or Koyeb.
 
@@ -21,6 +22,28 @@ A production-ready FastAPI template with Docker, CI/CD, observability, and one-c
 - **GitHub Container Registry** publishing
 - **Testing** with pytest
 - **Code quality** with ruff
+
+## Quick Deploy
+
+### Deploy to Render
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/armanshirzad/FastiApiTemplate)
+
+1. Fork this repository
+2. Connect your GitHub account to Render
+3. Click "Deploy to Render" button above
+4. Configure environment variables
+5. Deploy!
+
+### Deploy to Koyeb
+
+[![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=docker&image=ghcr.io/armanshirzad/fastiapitemplate:latest)
+
+1. Fork this repository
+2. Create account at [Koyeb](https://app.koyeb.com)
+3. Click "Deploy to Koyeb" button above
+4. Configure environment variables
+5. Deploy!
 
 ## CI/CD Overview
 
@@ -108,28 +131,6 @@ make docker-build
 # Run with Docker Compose (includes PostgreSQL)
 make docker-compose-up
 ```
-
-## Deployment
-
-### Deploy to Render
-
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/armanshirzad/FastiApiTemplate)
-
-1. Fork this repository
-2. Connect your GitHub account to Render
-3. Click "Deploy to Render" button above
-4. Configure environment variables
-5. Deploy!
-
-### Deploy to Koyeb
-
-[![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=docker&image=ghcr.io/armanshirzad/fastiapitemplate:latest)
-
-1. Fork this repository
-2. Create account at [Koyeb](https://app.koyeb.com)
-3. Click "Deploy to Koyeb" button above
-4. Configure environment variables
-5. Deploy!
 
 ## Observability
 
