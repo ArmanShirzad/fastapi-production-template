@@ -1,10 +1,11 @@
+import logging
+from typing import Optional
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import Optional
-import logging
 
 from app.config import settings
-from app.core.database import get_database, check_database_health
+from app.core.database import check_database_health, get_database
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
