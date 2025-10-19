@@ -1,17 +1,17 @@
+import logging
+from contextlib import asynccontextmanager
+
+import sentry_sdk
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from contextlib import asynccontextmanager
-import logging
-import sentry_sdk
 from sentry_sdk.integrations.fastapi import FastApiIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
+from app.api.routes import example, health
 from app.config import settings
 from app.core.database import init_database
 from app.core.metrics import setup_metrics
-from app.api.routes import health, example
-
 
 # Configure logging
 logging.basicConfig(
@@ -72,8 +72,7 @@ if settings.cors_origins:
 
 # Add security middleware
 app.add_middleware(
-    TrustedHostMiddleware,
-    allowed_hosts=["*"] if settings.debug else ["localhost", "127.0.0.1"]
+    TrustedHostMiddleware, allowed_hosts=["*"] if settings.debug else ["localhost", "127.0.0.1"]
 )
 
 

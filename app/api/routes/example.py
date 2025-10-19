@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
-from pydantic import BaseModel
-from typing import List, Optional
 import logging
+from typing import Optional
+
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_database
 
@@ -35,7 +36,7 @@ items_db = []
 next_id = 1
 
 
-@router.get("/items", response_model=List[ItemResponse])
+@router.get("/items", response_model=list[ItemResponse])
 async def list_items(db: Optional[AsyncSession] = Depends(get_database)):
     """List all items."""
     logger.info("Listing all items")
@@ -43,9 +44,7 @@ async def list_items(db: Optional[AsyncSession] = Depends(get_database)):
 
 
 @router.post("/items", response_model=ItemResponse, status_code=201)
-async def create_item(
-    item: ItemCreate, db: Optional[AsyncSession] = Depends(get_database)
-):
+async def create_item(item: ItemCreate, db: Optional[AsyncSession] = Depends(get_database)):
     """Create a new item."""
     global next_id
 

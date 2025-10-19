@@ -1,99 +1,77 @@
 name: Release
-
 on:
   push:
-    tags:
-      - 'v*'
+    tags: ['v*']   # run only on tags like v0.1.4
+permissions:
+  contents: write
+  packages: write
 
 jobs:
-  release:
+  build-and-push:
+    if: github.repository_owner == 'ArmanShirzad'  # skip on forks entirely
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      packages: write
-    
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-    
-    - name: Log in to GitHub Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Extract metadata
-      id: meta
-      uses: docker/metadata-action@v5
-      with:
-        images: ghcr.io/armanshirzad/fastiapitemplate
-        tags: |
-          type=ref,event=branch
-          type=ref,event=pr
-          type=semver,pattern={{version}}
-          type=semver,pattern={{major}}.{{minor}}
-          type=semver,pattern={{major}}
-          type=raw,value=latest,enable={{is_default_branch}}
-    
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        platforms: linux/amd64,linux/arm64
-        push: true
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-    
-    - name: Create GitHub Release
-      uses: softprops/action-gh-release@v2
-      with:
-        tag_name: ${{ github.ref_name }}
-        name: Release ${{ github.ref_name }}
-        body: |
-          ## Highlights
-          
-          🚀 **New Features & Improvements**
-          - Enhanced security with empty CORS origins by default
-          - Added TrustedHostMiddleware for production security
-          - Comprehensive contributor tools and templates
-          - Automated security scanning with CodeQL and Scorecard
-          - Pre-commit hooks for code quality
-          
-          🔒 **Security Enhancements**
-          - Non-root Docker user implementation
-          - Security headers middleware
-          - Dependency scanning with Dependabot
-          - Vulnerability reporting policy
-          
-          👥 **Contributor Experience**
-          - GitHub issue templates for bugs and features
-          - Pull request template with checklist
-          - Code of Conduct and Contributing guidelines
-          - Pre-commit hooks and editor configuration
-          
-          ## Changes in this Release
-          
-          See the [changelog](CHANGELOG.md) for detailed information about changes in this release.
-          
-          ## Docker Image
-          
-          The Docker image is available at:
-          - `ghcr.io/armanshirzad/fastiapitemplate:latest`
-          - `ghcr.io/armanshirzad/fastiapitemplate:${{ github.ref_name }}`
-          
-          ## Quick Deploy
-          
-          ### Render
-          [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/armanshirzad/FastiApiTemplate)
-          
-          ### Koyeb
-          [![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=docker&image=ghcr.io/armanshirzad/fastiapitemplate:latest)
-        draft: false
-        prerelease: false
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v4
+
+      # Uses the built-in GITHUB_TOKEN (you do NOT create this in Settings)
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build image
+        run: docker build -t ghcr.io/${{ github.repository }}:${{ github.ref_name }} .
+
+      - name: Push image
+        run: docker push ghcr.io/${{ github.repository }}:${{ github.ref_name }}
+
+      - name: Sentry release (optional)
+        if: ${{ secrets.SENTRY_DSN != '' }}
+        run: echo "sentry-cli …"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body: |
+            ## Highlights
+            
+            🚀 **New Features & Improvements**
+            - Enhanced security with empty CORS origins by default
+            - Added TrustedHostMiddleware for production security
+            - Comprehensive contributor tools and templates
+            - Automated security scanning with CodeQL and Scorecard
+            - Pre-commit hooks for code quality
+            
+            🔒 **Security Enhancements**
+            - Non-root Docker user implementation
+            - Security headers middleware
+            - Dependency scanning with Dependabot
+            - Vulnerability reporting policy
+            
+            👥 **Contributor Experience**
+            - GitHub issue templates for bugs and features
+            - Pull request template with checklist
+            - Code of Conduct and Contributing guidelines
+            - Pre-commit hooks and editor configuration
+            
+            ## Changes in this Release
+            
+            See the [changelog](CHANGELOG.md) for detailed information about changes in this release.
+            
+            ## Docker Image
+            
+            The Docker image is available at:
+            - `ghcr.io/armanshirzad/fastiapitemplate:latest`
+            - `ghcr.io/armanshirzad/fastiapitemplate:${{ github.ref_name }}`
+            
+            ## Quick Deploy
+            
+            ### Render
+            [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/armanshirzad/FastiApiTemplate)
+            
+            ### Koyeb
+            [![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=docker&image=ghcr.io/armanshirzad/fastiapitemplate:latest)
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

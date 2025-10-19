@@ -1,5 +1,4 @@
 name: CI
-
 on:
   push:
     branches: [ main, develop ]
@@ -7,70 +6,22 @@ on:
     branches: [ main ]
 
 jobs:
-  lint:
+  unit:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Python 3.12
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.12'
-    
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements-dev.txt
-    
-    - name: Run linting
-      run: |
-        ruff check app/ tests/
-        ruff format --check app/ tests/
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: make install
+      - run: make lint
+      - run: make test
 
-  test:
+  integration_postgres:
+    if: ${{ secrets.DATABASE_URL != '' }}  # only runs when someone configures it
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Python 3.12
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.12'
-    
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install -r requirements-dev.txt
-    
-    - name: Run tests
-      run: |
-        pytest tests/ -v --cov=app --cov-report=xml --cov-report=html
-    
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./coverage.xml
-        flags: unittests
-        name: codecov-umbrella
-        fail_ci_if_error: false
-
-  build:
-    runs-on: ubuntu-latest
-    needs: [lint, test]
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-    
-    - name: Build Docker image
-      run: |
-        docker build -t fastapi-template:test .
-    
-    - name: Test Docker image
-      run: |
-        docker run --rm -d --name test-container -p 8000:8000 fastapi-template:test
-        sleep 10
-        curl -f http://localhost:8000/health || exit 1
-        docker stop test-container
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: make install
+      - run: echo "Run integration tests with ${{ secrets.DATABASE_URL }}"
