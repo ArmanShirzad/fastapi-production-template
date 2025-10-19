@@ -24,7 +24,7 @@ jobs:
         run: docker push ghcr.io/${{ github.repository }}:${{ github.ref_name }}
 
       - name: Sentry release (optional)
-        if: ${{ secrets.SENTRY_DSN }}
+        if: ${{ secrets.SENTRY_DSN != '' }}
         run: echo "sentry-cli …"
 
       - name: Create GitHub Release
