@@ -50,6 +50,7 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 cover/
+.ruff_cache/
 
 # Translations
 *.mo
@@ -164,6 +165,9 @@ cython_debug/
 
 # VS Code
 .vscode/
+
+# JetBrains
+.idea/
 
 # Docker
 .dockerignore
