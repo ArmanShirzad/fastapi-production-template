@@ -1,6 +1,6 @@
 name: fastapi-template
 type: docker
-image: ghcr.io/armanshirzad/fastiapitemplate:latest
+image: ghcr.io/armanshirzad/fastapi-production-template:latest
 ports:
   - port: 8000
     protocol: http
