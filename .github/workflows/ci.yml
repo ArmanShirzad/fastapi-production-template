@@ -4,7 +4,6 @@ on:
     branches: [ main, develop ]
   pull_request:
     branches: [ main ]
-  workflow_dispatch:
 
 jobs:
   unit:
@@ -12,22 +11,39 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with: { python-version: '3.12' }
+        with:
+          python-version: '3.12'
       - run: make install
       - run: make lint
       - run: make test
 
   integration_postgres:
-    if: ${{ env.DATABASE_URL != '' }}
     runs-on: ubuntu-latest
-    env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL || '' }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with: { python-version: '3.12' }
-      - run: make install
-      - name: Run integration tests
+      # Gate: detect if secret exists
+      - name: Gate integration tests
+        id: gate
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}   # empty if not set
         run: |
-          echo "DATABASE_URL detected. Running integration tests..."
-          make test-integration
+          if [ -n "${DATABASE_URL}" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "No DATABASE_URL; skipping integration tests."
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.enabled == 'true'
+
+      - uses: actions/setup-python@v5
+        if: steps.gate.outputs.enabled == 'true'
+        with:
+          python-version: '3.12'
+
+      - run: make install
+        if: steps.gate.outputs.enabled == 'true'
+
+      - name: Run integration tests
+        if: steps.gate.outputs.enabled == 'true'
+        run: make test-integration
