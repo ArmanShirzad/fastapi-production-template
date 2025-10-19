@@ -17,7 +17,7 @@ jobs:
       - run: make test
 
   integration_postgres:
-    if: ${{ secrets.DATABASE_URL != '' }}  # only runs when someone configures it
+    if: ${{ secrets.DATABASE_URL }}  # only runs when someone configures it
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
