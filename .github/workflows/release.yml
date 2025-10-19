@@ -1,8 +1,9 @@
 name: Release
 on:
   push:
-    tags: ['v*']   # run only on tags like v0.1.4
-  workflow_dispatch:
+    tags: ['v*']        # triggers on v0.1.0 etc.
+  workflow_dispatch:     # allow manual test runs
+
 permissions:
   contents: write
   packages: write
@@ -13,16 +14,15 @@ concurrency:
 
 jobs:
   build-and-push:
-    if: ${{ startsWith(github.ref, 'refs/tags/') && github.repository_owner == github.actor }}
+    # simple and template-friendly: run on any tag
+    if: ${{ startsWith(github.ref, 'refs/tags/') }}
     runs-on: ubuntu-latest
     env:
+      # optional; empty when not set, safe for 'if:' checks
       SENTRY_DSN: ${{ secrets.SENTRY_DSN || '' }}
+
     steps:
       - uses: actions/checkout@v4
-
-      # Uses the built-in GITHUB_TOKEN (you do NOT create this in Settings)
-      - name: Log in to GHCR
-        run: echo "${{ github.token }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Compute image name (lowercase)
         id: img
@@ -30,7 +30,10 @@ jobs:
           REPO_LC=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
           echo "image=ghcr.io/${REPO_LC}" >> "$GITHUB_OUTPUT"
 
-      - name: Build image
+      - name: Log in to GHCR
+        run: echo "${{ github.token }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build
         run: |
           docker build \
             -t ${{ steps.img.outputs.image }}:${{ github.ref_name }} \
@@ -40,18 +43,17 @@ jobs:
         run: |
           cid=$(docker run -d -p 8000:8000 ${{ steps.img.outputs.image }}:latest)
           for i in {1..30}; do curl -fsS http://localhost:8000/health && break || sleep 1; done
-          docker logs "$cid" --tail 50 || true
+          docker logs "$cid" --tail 50
           docker rm -f "$cid"
 
-      - name: Push image
+      - name: Push
         run: |
           docker push ${{ steps.img.outputs.image }}:${{ github.ref_name }}
           docker push ${{ steps.img.outputs.image }}:latest
 
       - name: Sentry release (optional)
         if: ${{ env.SENTRY_DSN != '' }}
-        run: |
-          echo "Would run sentry-cli for ${{ github.ref_name }}"
+        run: echo "Would run sentry-cli here for ${{ github.ref_name }}"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -60,10 +62,8 @@ jobs:
           name: Release ${{ github.ref_name }}
           body: |
             See CHANGELOG.md for details.
-            Docker image:
+            Image:
             - ${{ steps.img.outputs.image }}:latest
             - ${{ steps.img.outputs.image }}:${{ github.ref_name }}
-          draft: false
-          prerelease: false
         env:
           GITHUB_TOKEN: ${{ github.token }}
