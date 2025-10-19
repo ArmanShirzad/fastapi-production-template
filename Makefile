@@ -1,4 +1,4 @@
-.PHONY: help install dev test lint format docker-build docker-run docker-compose-up clean
+.PHONY: help install dev test test-integration lint format docker-build docker-run docker-compose-up clean
 
 # Default target
 help: ## Show this help message
@@ -14,6 +14,9 @@ dev: ## Run development server
 
 test: ## Run tests with coverage
 	pytest tests/ -v --cov=app --cov-report=html --cov-report=term
+
+test-integration: ## Run integration tests (expects DATABASE_URL)
+	pytest tests/ -v -m integration --cov=app --cov-report=term
 
 lint: ## Run linting
 	ruff check app/ tests/

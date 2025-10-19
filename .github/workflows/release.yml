@@ -2,29 +2,56 @@ name: Release
 on:
   push:
     tags: ['v*']   # run only on tags like v0.1.4
+  workflow_dispatch:
 permissions:
   contents: write
   packages: write
 
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   build-and-push:
-    if: ${{ github.repository_owner == 'ArmanShirzad' }}  # skip on forks entirely
+    if: ${{ startsWith(github.ref, 'refs/tags/') && github.repository_owner == github.actor }}
     runs-on: ubuntu-latest
+    env:
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN || '' }}
     steps:
       - uses: actions/checkout@v4
 
       # Uses the built-in GITHUB_TOKEN (you do NOT create this in Settings)
       - name: Log in to GHCR
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        run: echo "${{ github.token }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Compute image name (lowercase)
+        id: img
+        run: |
+          REPO_LC=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          echo "image=ghcr.io/${REPO_LC}" >> "$GITHUB_OUTPUT"
 
       - name: Build image
-        run: docker build -t ghcr.io/armanshirzad/fastapi-production-template:${{ github.ref_name }} .
+        run: |
+          docker build \
+            -t ${{ steps.img.outputs.image }}:${{ github.ref_name }} \
+            -t ${{ steps.img.outputs.image }}:latest .
+
+      - name: Smoke test container health
+        run: |
+          cid=$(docker run -d -p 8000:8000 ${{ steps.img.outputs.image }}:latest)
+          for i in {1..30}; do curl -fsS http://localhost:8000/health && break || sleep 1; done
+          docker logs "$cid" --tail 50 || true
+          docker rm -f "$cid"
 
       - name: Push image
-        run: docker push ghcr.io/armanshirzad/fastapi-production-template:${{ github.ref_name }}
+        run: |
+          docker push ${{ steps.img.outputs.image }}:${{ github.ref_name }}
+          docker push ${{ steps.img.outputs.image }}:latest
 
       - name: Sentry release (optional)
-        run: echo "Sentry release would run here if SENTRY_DSN secret was configured"
+        if: ${{ env.SENTRY_DSN != '' }}
+        run: |
+          echo "Would run sentry-cli for ${{ github.ref_name }}"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -32,45 +59,11 @@ jobs:
           tag_name: ${{ github.ref_name }}
           name: Release ${{ github.ref_name }}
           body: |
-            ## Highlights
-            
-            🚀 **New Features & Improvements**
-            - Enhanced security with empty CORS origins by default
-            - Added TrustedHostMiddleware for production security
-            - Comprehensive contributor tools and templates
-            - Automated security scanning with CodeQL and Scorecard
-            - Pre-commit hooks for code quality
-            
-            🔒 **Security Enhancements**
-            - Non-root Docker user implementation
-            - Security headers middleware
-            - Dependency scanning with Dependabot
-            - Vulnerability reporting policy
-            
-            👥 **Contributor Experience**
-            - GitHub issue templates for bugs and features
-            - Pull request template with checklist
-            - Code of Conduct and Contributing guidelines
-            - Pre-commit hooks and editor configuration
-            
-            ## Changes in this Release
-            
-            See the [changelog](CHANGELOG.md) for detailed information about changes in this release.
-            
-            ## Docker Image
-            
-            The Docker image is available at:
-            - `ghcr.io/armanshirzad/fastapi-production-template:latest`
-            - `ghcr.io/armanshirzad/fastapi-production-template:${{ github.ref_name }}`
-            
-            ## Quick Deploy
-            
-            ### Render
-            [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/armanshirzad/FastiApiTemplate)
-            
-            ### Koyeb
-            [![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=docker&image=ghcr.io/armanshirzad/fastapi-production-template:latest)
+            See CHANGELOG.md for details.
+            Docker image:
+            - ${{ steps.img.outputs.image }}:latest
+            - ${{ steps.img.outputs.image }}:${{ github.ref_name }}
           draft: false
           prerelease: false
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}

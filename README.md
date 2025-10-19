@@ -26,7 +26,7 @@ A production-ready FastAPI template with Docker, CI/CD, observability, and one-c
 
 ### Deploy to Render
 
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/armanshirzad/FastiApiTemplate)
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/armanshirzad/fastapi-production-template)
 
 1. Fork this repository
 2. Connect your GitHub account to Render
@@ -46,17 +46,17 @@ A production-ready FastAPI template with Docker, CI/CD, observability, and one-c
 
 ## CI/CD Overview
 
-- **Workflow files:** `.github/workflows/ci.yml` for lint, tests, and Docker build; `.github/workflows/release.yml` for multi-arch image publishes and tagged releases.
+- **Workflow files:** `.github/workflows/ci.yml` runs lint and tests; `.github/workflows/release.yml` builds the Docker image and pushes to GHCR on tag pushes (guarded to run only on this repository, not forks).
 - **Registry:** pushes to `ghcr.io/armanshirzad/fastapi-production-template`.
 - **Branch strategy:** run CI on `main` and `develop`, require tags `v*` for releases.
-- **Health check:** release job hits `/health` after building the Docker image to ensure the container boots.
+- **Publishing guard:** image publishing only runs on this repository owner (`github.repository_owner == 'ArmanShirzad'`) so forks don't attempt to push.
 
 ## Quick Start
 
 ```bash
-# Clone and setup
-git clone <your-repo-url>
-cd FastiApiTemplate
+# Clone and setup (replace with your repo URL)
+git clone https://github.com/armanshirzad/fastapi-production-template.git
+cd fastapi-production-template
 cp .env.example .env
 
 # Run locally (no database)
@@ -100,22 +100,20 @@ make docker-compose-up
 
 ## Secret Configuration
 
-The template works out of the box with sensible defaults, but you can enhance it by adding secrets in your repository Settings:
+The template runs out of the box with no secrets. You can optionally add these for production:
 
-- **`SECRET_KEY`** - Real random string for production signing (dev generates one automatically)
-- **`DATABASE_URL`** - PostgreSQL connection for production and integration tests
-- **`SENTRY_DSN`** - Enable Sentry error tracking and release notifications
+- **`SECRET_KEY`** — Secret used by the application for signing and security. If not provided, a random key is generated at startup in development/test.
+- **`DATABASE_URL`** — PostgreSQL connection string. When set, the app uses PostgreSQL; when unset, the app runs without a database and the readiness endpoint will report "not configured" for the database.
+- **`SENTRY_DSN`** — When set, Sentry SDK is initialized in the application for error reporting; when empty, Sentry is skipped.
 
-### What happens when secrets are provided:
+Notes:
 
-- **`DATABASE_URL`** → Enables PostgreSQL integration tests in CI
-- **`SENTRY_DSN`** → Enables Sentry release step in GitHub Actions
-- **`SECRET_KEY`** → Required for production; dev mode generates one if missing
+- **Workflows do not require any secrets.** CI always runs on pushes and pull requests. The release workflow uses the built‑in `GITHUB_TOKEN` and only pushes images from this repository (guarded by repository owner check). Forks will automatically skip the publishing step.
 
 ## Database Options
 
 ### Without Database (Minimal)
-Leave `DATABASE_URL` empty in `.env` for a minimal API without database dependencies.
+Leave `DATABASE_URL` empty in `.env` for a minimal API without database dependencies. The app will operate without persistence; `/health/ready` will still return 200 with `database: "not configured"`.
 
 ### With PostgreSQL
 Set `DATABASE_URL=postgresql+asyncpg://user:password@localhost:5432/dbname` in `.env`.
@@ -153,13 +151,13 @@ make docker-compose-up
 - Integration: `prometheus-fastapi-instrumentator`
 
 ### Sentry Integration
-- Automatic error tracking
+- Automatic error tracking when `SENTRY_DSN` is provided
 - Performance monitoring
-- Configure via `SENTRY_DSN` environment variable
+- Skipped automatically when `SENTRY_DSN` is empty
 
 ### Health Checks
 - `/health` - Basic health check
-- `/health/ready` - Readiness check (includes database)
+- `/health/ready` - Readiness check; reports database status and succeeds whether the database is configured or not
 
 ## Project Structure
 
@@ -196,6 +194,7 @@ This template includes several security features:
 - **Security Headers**: Basic security middleware included
 - **Dependency Scanning**: Dependabot for automated security updates
 - **Code Analysis**: CodeQL security scanning
+- **Safe Defaults**: App runs without secrets by default; production deployments should set `SECRET_KEY` and configure `CORS_ORIGINS` explicitly.
 
 For security vulnerabilities, please see [SECURITY.md](SECURITY.md).
 
