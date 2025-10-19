@@ -4,7 +4,7 @@
 [![Release](https://github.com/armanshirzad/FastiApiTemplate/actions/workflows/release.yml/badge.svg)](https://github.com/armanshirzad/FastiApiTemplate/actions/workflows/release.yml)
 [![Python Version](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Docker](https://img.shields.io/badge/docker-ghcr.io%2Farmanshirzad%2Ffastiapitemplate-blue.svg)](https://github.com/armanshirzad/FastiApiTemplate/pkgs/container/fastiapitemplate)
+[![Docker](https://img.shields.io/badge/docker-ghcr.io%2Farmanshirzad%2Ffastapi--production--template-blue.svg)](https://github.com/armanshirzad/FastiApiTemplate/pkgs/container/fastapi-production-template)
 
 A production-ready FastAPI template with Docker, CI/CD, observability, and one-click deployment to Render or Koyeb.
 
@@ -36,7 +36,7 @@ A production-ready FastAPI template with Docker, CI/CD, observability, and one-c
 
 ### Deploy to Koyeb
 
-[![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=docker&image=ghcr.io/armanshirzad/fastiapitemplate:latest)
+[![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=docker&image=ghcr.io/armanshirzad/fastapi-production-template:latest)
 
 1. Fork this repository
 2. Create account at [Koyeb](https://app.koyeb.com)
@@ -47,7 +47,7 @@ A production-ready FastAPI template with Docker, CI/CD, observability, and one-c
 ## CI/CD Overview
 
 - **Workflow files:** `.github/workflows/ci.yml` for lint, tests, and Docker build; `.github/workflows/release.yml` for multi-arch image publishes and tagged releases.
-- **Registry:** pushes to `ghcr.io/armanshirzad/fastiapitemplate`.
+- **Registry:** pushes to `ghcr.io/armanshirzad/fastapi-production-template`.
 - **Branch strategy:** run CI on `main` and `develop`, require tags `v*` for releases.
 - **Health check:** release job hits `/health` after building the Docker image to ensure the container boots.
 

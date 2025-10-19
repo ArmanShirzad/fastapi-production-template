@@ -18,10 +18,10 @@ jobs:
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build image
-        run: docker build -t ghcr.io/${{ github.repository }}:${{ github.ref_name }} .
+        run: docker build -t ghcr.io/armanshirzad/fastapi-production-template:${{ github.ref_name }} .
 
       - name: Push image
-        run: docker push ghcr.io/${{ github.repository }}:${{ github.ref_name }}
+        run: docker push ghcr.io/armanshirzad/fastapi-production-template:${{ github.ref_name }}
 
       - name: Sentry release (optional)
         run: echo "Sentry release would run here if SENTRY_DSN secret was configured"
@@ -60,8 +60,8 @@ jobs:
             ## Docker Image
             
             The Docker image is available at:
-            - `ghcr.io/armanshirzad/fastiapitemplate:latest`
-            - `ghcr.io/armanshirzad/fastiapitemplate:${{ github.ref_name }}`
+            - `ghcr.io/armanshirzad/fastapi-production-template:latest`
+            - `ghcr.io/armanshirzad/fastapi-production-template:${{ github.ref_name }}`
             
             ## Quick Deploy
             
@@ -69,7 +69,7 @@ jobs:
             [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/armanshirzad/FastiApiTemplate)
             
             ### Koyeb
-            [![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=docker&image=ghcr.io/armanshirzad/fastiapitemplate:latest)
+            [![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=docker&image=ghcr.io/armanshirzad/fastapi-production-template:latest)
           draft: false
           prerelease: false
         env:
