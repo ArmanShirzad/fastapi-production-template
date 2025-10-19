@@ -10,18 +10,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v5
         with: { python-version: '3.12' }
       - run: make install
       - run: make lint
       - run: make test
 
   integration_postgres:
-    if: ${{ secrets.DATABASE_URL != '' }}  # only runs when someone configures it
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v5
         with: { python-version: '3.12' }
       - run: make install
-      - run: echo "Run integration tests with ${{ secrets.DATABASE_URL }}"
+      - run: echo "Integration tests would run here if DATABASE_URL secret was configured"
