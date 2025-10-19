@@ -1,10 +1,10 @@
 # FastAPI Production Starter Template
 
-[![CI](https://github.com/armanshirzad/FastiApiTemplate/actions/workflows/ci.yml/badge.svg)](https://github.com/armanshirzad/FastiApiTemplate/actions/workflows/ci.yml)
-[![Release](https://github.com/armanshirzad/FastiApiTemplate/actions/workflows/release.yml/badge.svg)](https://github.com/armanshirzad/FastiApiTemplate/actions/workflows/release.yml)
+[![CI](https://github.com/armanshirzad/fastapi-production-template/actions/workflows/ci.yml/badge.svg)](https://github.com/armanshirzad/fastapi-production-template/actions/workflows/ci.yml)
+[![Release](https://github.com/armanshirzad/fastapi-production-template/actions/workflows/release.yml/badge.svg)](https://github.com/armanshirzad/fastapi-production-template/actions/workflows/release.yml)
 [![Python Version](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Docker](https://img.shields.io/badge/docker-ghcr.io%2Farmanshirzad%2Ffastapi--production--template-blue.svg)](https://github.com/armanshirzad/FastiApiTemplate/pkgs/container/fastapi-production-template)
+[![Docker](https://img.shields.io/badge/docker-ghcr.io%2Farmanshirzad%2Ffastapi--production--template-blue.svg)](https://github.com/armanshirzad/fastapi-production-template/pkgs/container/fastapi-production-template)
 
 A production-ready FastAPI template with Docker, CI/CD, observability, and one-click deployment to Render or Koyeb.
 

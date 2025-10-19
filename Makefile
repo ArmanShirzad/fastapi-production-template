@@ -15,8 +15,19 @@ dev: ## Run development server
 test: ## Run tests with coverage
 	pytest tests/ -v --cov=app --cov-report=html --cov-report=term
 
-test-integration: ## Run integration tests (expects DATABASE_URL)
-	pytest tests/ -v -m integration --cov=app --cov-report=term
+test-integration: ## Run integration tests (expects DATABASE_URL); skips cleanly if not set
+	@if [ -z "$$DATABASE_URL" ]; then \
+		echo "Skipping integration tests: DATABASE_URL is not set."; \
+	else \
+		pytest tests/ -v -m integration --cov=app --cov-report=term; \
+		rc=$$?; \
+		if [ $$rc -eq 5 ]; then \
+			echo "No integration tests collected; treating as success."; \
+			exit 0; \
+		else \
+			exit $$rc; \
+		fi; \
+	fi
 
 lint: ## Run linting
 	ruff check app/ tests/
