@@ -5,7 +5,6 @@
 [![Python Version](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Docker](https://img.shields.io/badge/docker-ghcr.io%2Farmanshirzad%2Ffastiapitemplate-blue.svg)](https://github.com/armanshirzad/FastiApiTemplate/pkgs/container/fastiapitemplate)
-[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/armanshirzad/FastiApiTemplate/badge)](https://api.securityscorecards.dev/projects/github.com/armanshirzad/FastiApiTemplate)
 
 A production-ready FastAPI template with Docker, CI/CD, observability, and one-click deployment to Render or Koyeb.
 
@@ -196,7 +195,7 @@ This template includes several security features:
 - **Non-root Docker User**: Runs as `appuser` instead of root
 - **Security Headers**: Basic security middleware included
 - **Dependency Scanning**: Dependabot for automated security updates
-- **Code Analysis**: CodeQL and Scorecard security scanning
+- **Code Analysis**: CodeQL security scanning
 
 For security vulnerabilities, please see [SECURITY.md](SECURITY.md).
 
