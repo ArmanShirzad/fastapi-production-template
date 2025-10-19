@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -10,8 +9,8 @@ from app.config import settings
 logger = logging.getLogger(__name__)
 
 # Global variables for database
-engine: Optional[object] = None
-async_session: Optional[async_sessionmaker[AsyncSession]] = None
+engine: object | None = None
+async_session: async_sessionmaker[AsyncSession] | None = None
 
 
 class Base(DeclarativeBase):
@@ -49,7 +48,7 @@ async def init_database():
         raise
 
 
-async def get_database() -> Optional[AsyncSession]:
+async def get_database() -> AsyncSession | None:
     """Get database session."""
     if not async_session:
         yield None

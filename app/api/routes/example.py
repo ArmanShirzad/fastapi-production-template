@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
@@ -14,21 +13,21 @@ router = APIRouter()
 # Pydantic models
 class ItemCreate(BaseModel):
     name: str
-    description: Optional[str] = None
+    description: str | None = None
     price: float
 
 
 class ItemResponse(BaseModel):
     id: int
     name: str
-    description: Optional[str] = None
+    description: str | None = None
     price: float
 
 
 class ItemUpdate(BaseModel):
-    name: Optional[str] = None
-    description: Optional[str] = None
-    price: Optional[float] = None
+    name: str | None = None
+    description: str | None = None
+    price: float | None = None
 
 
 # In-memory storage for demo (replace with database in real app)
@@ -37,14 +36,14 @@ next_id = 1
 
 
 @router.get("/items", response_model=list[ItemResponse])
-async def list_items(db: Optional[AsyncSession] = Depends(get_database)):
+async def list_items(db: AsyncSession | None = Depends(get_database)):
     """List all items."""
     logger.info("Listing all items")
     return items_db
 
 
 @router.post("/items", response_model=ItemResponse, status_code=201)
-async def create_item(item: ItemCreate, db: Optional[AsyncSession] = Depends(get_database)):
+async def create_item(item: ItemCreate, db: AsyncSession | None = Depends(get_database)):
     """Create a new item."""
     global next_id
 
@@ -63,7 +62,7 @@ async def create_item(item: ItemCreate, db: Optional[AsyncSession] = Depends(get
 
 
 @router.get("/items/{item_id}", response_model=ItemResponse)
-async def get_item(item_id: int, db: Optional[AsyncSession] = Depends(get_database)):
+async def get_item(item_id: int, db: AsyncSession | None = Depends(get_database)):
     """Get a specific item by ID."""
     for item in items_db:
         if item.id == item_id:
@@ -77,7 +76,7 @@ async def get_item(item_id: int, db: Optional[AsyncSession] = Depends(get_databa
 async def update_item(
     item_id: int,
     item_update: ItemUpdate,
-    db: Optional[AsyncSession] = Depends(get_database),
+    db: AsyncSession | None = Depends(get_database),
 ):
     """Update an existing item."""
     for i, item in enumerate(items_db):
@@ -97,7 +96,7 @@ async def update_item(
 
 
 @router.delete("/items/{item_id}")
-async def delete_item(item_id: int, db: Optional[AsyncSession] = Depends(get_database)):
+async def delete_item(item_id: int, db: AsyncSession | None = Depends(get_database)):
     """Delete an item."""
     for i, item in enumerate(items_db):
         if item.id == item_id:

@@ -1,5 +1,4 @@
 import secrets
-from typing import Optional
 
 from pydantic import ConfigDict
 from pydantic_settings import BaseSettings
@@ -16,14 +15,14 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
 
     # Database
-    database_url: Optional[str] = None
+    database_url: str | None = None
 
     # Security
     secret_key: str = ""  # Will be generated if empty
     cors_origins: list[str] = []  # Empty by default for security
 
     # Sentry
-    sentry_dsn: Optional[str] = None
+    sentry_dsn: str | None = None
 
     # Server
     host: str = "0.0.0.0"

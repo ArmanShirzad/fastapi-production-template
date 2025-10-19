@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -22,7 +21,7 @@ async def health_check():
 
 
 @router.get("/ready")
-async def readiness_check(db: Optional[AsyncSession] = Depends(get_database)):
+async def readiness_check(db: AsyncSession | None = Depends(get_database)):
     """Readiness check endpoint that includes database connectivity."""
     db_status = await check_database_health()
 
