@@ -8,7 +8,7 @@ permissions:
 
 jobs:
   build-and-push:
-    if: github.repository_owner == 'ArmanShirzad'  # skip on forks entirely
+    if: ${{ github.repository_owner == 'ArmanShirzad' }}  # skip on forks entirely
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,7 +24,7 @@ jobs:
         run: docker push ghcr.io/${{ github.repository }}:${{ github.ref_name }}
 
       - name: Sentry release (optional)
-        if: ${{ secrets.SENTRY_DSN }}
+        if: ${{ secrets.SENTRY_DSN != '' }}
         run: echo "sentry-cli …"
 
       - name: Create GitHub Release
