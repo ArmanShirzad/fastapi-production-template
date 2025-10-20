@@ -1,4 +1,4 @@
-# FastAPI Production Starter Template
+# FastAPI Production Starter Template v2.0.0
 
 [![CI](https://github.com/armanshirzad/fastapi-production-template/actions/workflows/ci.yml/badge.svg)](https://github.com/armanshirzad/fastapi-production-template/actions/workflows/ci.yml)
 [![Release](https://github.com/armanshirzad/fastapi-production-template/actions/workflows/release.yml/badge.svg)](https://github.com/armanshirzad/fastapi-production-template/actions/workflows/release.yml)
@@ -6,11 +6,12 @@
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Docker](https://img.shields.io/badge/docker-ghcr.io%2Farmanshirzad%2Ffastapi--production--template-blue.svg)](https://github.com/armanshirzad/fastapi-production-template/pkgs/container/fastapi-production-template)
 
-A production-ready FastAPI template with Docker, CI/CD, observability, and one-click deployment to Render or Koyeb.
+A production-ready FastAPI template with Docker, CI/CD, observability, and one-click deployment to Render or Koyeb. **Now with UV package management for faster, more reliable builds!**
 
 ## Features
 
 - **FastAPI** with Python 3.12
+- **UV Package Management** for lightning-fast dependency resolution
 - **Docker** multi-stage build for production
 - **Prometheus** metrics integration
 - **Sentry** error tracking
@@ -59,11 +60,23 @@ git clone https://github.com/armanshirzad/fastapi-production-template.git
 cd fastapi-production-template
 cp .env.example .env
 
+# Install dependencies with UV (recommended)
+uv sync
+
 # Run locally (no database)
-make dev
+uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 # Or with PostgreSQL
 make docker-compose-up
+```
+
+### Alternative: Traditional pip setup
+
+```bash
+# If you prefer pip (legacy support)
+pip install -r requirements.txt
+pip install -r requirements-dev.txt
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 ## Architecture
@@ -121,26 +134,45 @@ Set `DATABASE_URL=postgresql+asyncpg://user:password@localhost:5432/dbname` in `
 ## Development
 
 ```bash
-# Install dependencies
-make install
+# Install dependencies with UV (recommended)
+uv sync
 
 # Run development server
-make dev
+uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 # Run tests
-make test
+uv run pytest tests/ -v --cov=app --cov-report=html --cov-report=term
 
 # Lint code
-make lint
+uv run ruff check app/ tests/
+uv run ruff format --check app/ tests/
 
 # Format code
-make format
+uv run ruff format app/ tests/
 
 # Build Docker image
 make docker-build
 
 # Run with Docker Compose (includes PostgreSQL)
 make docker-compose-up
+```
+
+### Legacy pip commands (still supported)
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+pip install -r requirements-dev.txt
+
+# Run development server
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+# Run tests
+pytest tests/ -v --cov=app --cov-report=html --cov-report=term
+
+# Lint code
+ruff check app/ tests/
+ruff format --check app/ tests/
 ```
 
 ## Observability

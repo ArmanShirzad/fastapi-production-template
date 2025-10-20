@@ -1,25 +1,24 @@
-.PHONY: help install dev test test-integration lint format docker-build docker-run docker-compose-up clean
+.PHONY: help install dev test lint format docker-build docker-run docker-compose-up clean test-integration
 
 # Default target
 help: ## Show this help message
 	@echo "Available commands:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
-install: ## Install dependencies
-	pip install -r requirements.txt
-	pip install -r requirements-dev.txt
+install: ## Install dependencies with uv
+	uv sync
 
-dev: ## Run development server
-	uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+dev: ## Run development server with uv
+	uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
-test: ## Run tests with coverage
-	pytest tests/ -v --cov=app --cov-report=html --cov-report=term
+test: ## Run tests with coverage using uv
+	uv run pytest tests/ -v --cov=app --cov-report=html --cov-report=term
 
 test-integration: ## Run integration tests (expects DATABASE_URL); skips cleanly if not set
 	@if [ -z "$$DATABASE_URL" ]; then \
 		echo "Skipping integration tests: DATABASE_URL is not set."; \
 	else \
-		pytest tests/ -v -m integration --cov=app --cov-report=term; \
+		uv run pytest tests/ -v -m integration --cov=app --cov-report=term; \
 		rc=$$?; \
 		if [ $$rc -eq 5 ]; then \
 			echo "No integration tests collected; treating as success."; \
@@ -29,12 +28,12 @@ test-integration: ## Run integration tests (expects DATABASE_URL); skips cleanly
 		fi; \
 	fi
 
-lint: ## Run linting
-	ruff check app/ tests/
-	ruff format --check app/ tests/
+lint: ## Run linting with uv
+	uv run ruff check app/ tests/
+	uv run ruff format --check app/ tests/
 
-format: ## Format code
-	ruff format app/ tests/
+format: ## Format code with uv
+	uv run ruff format app/ tests/
 
 docker-build: ## Build Docker image
 	docker build -t fastapi-template .
@@ -54,3 +53,12 @@ clean: ## Clean up temporary files
 	rm -rf .pytest_cache/
 	rm -rf htmlcov/
 	rm -rf .coverage
+	rm -rf .ruff_cache/
+
+# Legacy pip commands (for reference)
+install-pip: ## Install dependencies with pip (legacy)
+	pip install -r requirements.txt
+	pip install -r requirements-dev.txt
+
+dev-pip: ## Run development server with pip (legacy)
+	uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
