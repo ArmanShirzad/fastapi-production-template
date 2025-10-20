@@ -16,10 +16,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-          cache: 'pip'
-      - run: make install
-      - run: make lint
-      - run: make test
+      - uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+      - run: uv sync --frozen --extra dev
+      - run: uv run ruff check app/ tests/
+      - run: uv run ruff format --check app/ tests/
+      - run: uv run pytest tests/ -v --cov=app --cov-report=html --cov-report=term
 
   integration_postgres:
     runs-on: ubuntu-latest
@@ -44,11 +47,27 @@ jobs:
         if: steps.gate.outputs.enabled == 'true'
         with:
           python-version: '3.12'
-          cache: 'pip'
 
-      - run: make install
+      - uses: astral-sh/setup-uv@v3
+        if: steps.gate.outputs.enabled == 'true'
+        with:
+          enable-cache: true
+
+      - run: uv sync --frozen --extra dev
         if: steps.gate.outputs.enabled == 'true'
 
       - name: Run integration tests
         if: steps.gate.outputs.enabled == 'true'
-        run: make test-integration
+        run: |
+          @if [ -z "$$DATABASE_URL" ]; then \
+            echo "Skipping integration tests: DATABASE_URL is not set."; \
+          else \
+            uv run pytest tests/ -v -m integration --cov=app --cov-report=term; \
+            rc=$$?; \
+            if [ $$rc -eq 5 ]; then \
+              echo "No integration tests collected; treating as success."; \
+              exit 0; \
+            else \
+              exit $$rc; \
+            fi; \
+          fi
