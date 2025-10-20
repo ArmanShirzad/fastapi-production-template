@@ -19,7 +19,7 @@ jobs:
       - uses: astral-sh/setup-uv@v3
         with:
           enable-cache: true
-      - run: uv sync --frozen
+      - run: uv sync --frozen --extra dev
       - run: uv run ruff check app/ tests/
       - run: uv run ruff format --check app/ tests/
       - run: uv run pytest tests/ -v --cov=app --cov-report=html --cov-report=term
@@ -53,7 +53,7 @@ jobs:
         with:
           enable-cache: true
 
-      - run: uv sync --frozen
+      - run: uv sync --frozen --extra dev
         if: steps.gate.outputs.enabled == 'true'
 
       - name: Run integration tests
